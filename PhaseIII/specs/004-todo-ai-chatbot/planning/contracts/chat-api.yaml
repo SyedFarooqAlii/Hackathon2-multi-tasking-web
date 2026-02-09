@@ -1,0 +1,113 @@
+openapi: 3.0.3
+info:
+  title: Todo AI Chatbot API
+  description: API for the AI-powered todo chatbot that manages tasks via natural language
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://api.todo-ai-chatbot.com
+    description: Production server
+paths:
+  /api/{user_id}/chat:
+    post:
+      summary: Process user message and return AI response
+      description: Handles user chat messages, processes with AI agent, and returns response with updated conversation context
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: The authenticated user's ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  description: The user's natural language message
+                  example: "Add a task to buy groceries"
+                conversation_id:
+                  type: integer
+                  description: Optional conversation ID to continue existing conversation
+                  example: 123
+      responses:
+        '200':
+          description: Successful response with AI message and conversation context
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - conversation_id
+                  - response
+                properties:
+                  conversation_id:
+                    type: integer
+                    description: The conversation ID (new or existing)
+                    example: 123
+                  response:
+                    type: string
+                    description: The AI-generated response
+                    example: "I've created a task 'buy groceries' for you."
+                  tool_calls:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tool_name:
+                          type: string
+                          description: Name of the MCP tool called
+                          example: "add_task"
+                        parameters:
+                          type: object
+                          description: Parameters passed to the tool
+                          example:
+                            user_id: "user123"
+                            title: "buy groceries"
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Invalid request format"
+        details:
+          type: string
+          description: Additional error details
+          example: "Message field is required"

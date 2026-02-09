@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"Get-Content C:\\\\Users\\\\PMLS\\\\Desktop\\\\hackathon2_phase1\\\\PhaseII\\\\specs\\\\002-secure-todo-auth\\\\tasks.md | Select-Object -Index \\(37..53\\) | ForEach-Object { ''{0,3}: {1}'' -f \\($_| ForEach-Object {$_ReadCount}\\), $_}\")"
+    ]
+  }
+}

@@ -1,0 +1,406 @@
+openapi: 3.0.3
+info:
+  title: Todo API
+  description: API for managing authenticated user's todo items with JWT authentication
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development server
+  - url: https://api.example.com/v1
+    description: Production server
+paths:
+  /users/register:
+    post:
+      summary: Register a new user
+      description: Creates a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User's email address
+                password:
+                  type: string
+                  format: password
+                  description: User's password
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: User's unique identifier
+                  email:
+                    type: string
+                    format: email
+                    description: User's email address
+        '400':
+          description: Bad request - invalid input
+        '409':
+          description: Conflict - email already exists
+
+  /users/login:
+    post:
+      summary: Authenticate user and get JWT token
+      description: Authenticates user credentials and returns JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User's email address
+                password:
+                  type: string
+                  format: password
+                  description: User's password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: JWT access token
+                  token_type:
+                    type: string
+                    description: Type of token (usually "bearer")
+        '401':
+          description: Unauthorized - invalid credentials
+
+  /users/me:
+    get:
+      summary: Get authenticated user info
+      description: Retrieve information about the authenticated user
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: User's unique identifier
+                  email:
+                    type: string
+                    format: email
+                    description: User's email address
+        '401':
+          description: Unauthorized - invalid or missing token
+
+  /users/{user_id}/tasks:
+    get:
+      summary: Get user's tasks
+      description: Retrieve all tasks for the authenticated user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: User ID (derived from JWT token, not from path)
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of user's tasks retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Todo'
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - attempting to access another user's tasks
+    post:
+      summary: Create a new task
+      description: Create a new task for the authenticated user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: User ID (derived from JWT token, not from path)
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoCreate'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - attempting to create task for another user
+
+  /users/{user_id}/tasks/{id}:
+    get:
+      summary: Get a specific task
+      description: Retrieve a specific task for the authenticated user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: User ID (derived from JWT token, not from path)
+          schema:
+            type: string
+            format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Task ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - attempting to access another user's task
+        '404':
+          description: Not found - task does not exist
+    put:
+      summary: Update a task
+      description: Update a specific task for the authenticated user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: User ID (derived from JWT token, not from path)
+          schema:
+            type: string
+            format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Task ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoUpdate'
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - attempting to update another user's task
+        '404':
+          description: Not found - task does not exist
+    delete:
+      summary: Delete a task
+      description: Delete a specific task for the authenticated user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: User ID (derived from JWT token, not from path)
+          schema:
+            type: string
+            format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Task ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Task deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - attempting to delete another user's task
+        '404':
+          description: Not found - task does not exist
+
+  /users/{user_id}/tasks/{id}/complete:
+    patch:
+      summary: Mark task as complete/incomplete
+      description: Toggle the completion status of a specific task for the authenticated user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: User ID (derived from JWT token, not from path)
+          schema:
+            type: string
+            format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Task ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - completed
+              properties:
+                completed:
+                  type: boolean
+                  description: Whether the task is completed or not
+      responses:
+        '200':
+          description: Task completion status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - attempting to update another user's task
+        '404':
+          description: Not found - task does not exist
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Todo:
+      type: object
+      required:
+        - id
+        - title
+        - completed
+        - user_id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the task
+        title:
+          type: string
+          maxLength: 255
+          description: Title of the task
+        description:
+          type: string
+          maxLength: 1000
+          description: Description of the task
+          nullable: true
+        completed:
+          type: boolean
+          description: Whether the task is completed
+        user_id:
+          type: string
+          format: uuid
+          description: ID of the user who owns the task
+        created_at:
+          type: string
+          format: date-time
+          description: When the task was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the task was last updated
+
+    TodoCreate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          maxLength: 255
+          description: Title of the task
+        description:
+          type: string
+          maxLength: 1000
+          description: Description of the task
+          nullable: true
+
+    TodoUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 255
+          description: Title of the task
+        description:
+          type: string
+          maxLength: 1000
+          description: Description of the task
+          nullable: true
+        completed:
+          type: boolean
+          description: Whether the task is completed
