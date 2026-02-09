@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -ExecutionPolicy Bypass -File \".specify/scripts/powershell/check-prerequisites.ps1\" -Json -RequireTasks -IncludeTasks)",
+      "Bash(if [ -d \"specs/001-console-todo-app/checklists\" ])",
+      "Bash(then ls -la specs/001-console-todo-app/checklists/)",
+      "Bash(else echo \"No checklists directory found\")",
+      "Bash(fi)"
+    ]
+  }
+}
