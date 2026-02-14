@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { getAuthToken } from '../lib/auth';
 
 // Types for our chat functionality
 type Message = {
@@ -22,7 +23,7 @@ export default function ChatComponent({ userId }: ChatProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [conversationId, setConversationId] = useState<number | null>(null);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
-  const { user, token } = useAuth(); // Get the full user object to verify user ID
+  const { user } = useAuth(); // Get the full user object to verify user ID
   const router = useRouter();
 
   // Scroll to bottom of messages
@@ -52,12 +53,15 @@ export default function ChatComponent({ userId }: ChatProps) {
     setIsLoading(true);
 
     try {
+      // Get auth token from localStorage
+      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') : null;
+
       // Call the backend chat API
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/chat/${userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Assuming token is available from auth context
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           message: inputValue,

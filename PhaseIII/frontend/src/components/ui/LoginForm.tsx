@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Input from './Input';
-import Button from './Button';
+import { Input } from './Input';
+import { Button } from './Button';
 
 interface LoginFormProps {
   onSubmit: (credentials: { email: string; password: string }) => void;

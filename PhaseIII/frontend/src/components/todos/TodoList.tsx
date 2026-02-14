@@ -40,7 +40,7 @@ export const TodoList: React.FC<TodoListProps> = ({ userId }) => {
 
   const handleCreateTodo = async (title: string, description?: string) => {
     try {
-      const newTodo = await todoApi.createTodo({ title, description })
+      const newTodo = await todoApi.createTodo({ title, description, category: '' })
       setTodos([newTodo, ...todos])
       setShowForm(false)
     } catch (err: any) {

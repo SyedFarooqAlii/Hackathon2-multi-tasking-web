@@ -3,23 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  completed: boolean;
-  created_at: string;
-  updated_at: string;
-  user_id: string;
-  category: string;
-  due_date?: string;
-}
+import { Todo } from '../../lib/types';
 
 const TodosPage = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Todo[]>([]);
   const [loadingTasks, setLoadingTasks] = useState(true);
   const [newTask, setNewTask] = useState({
     title: '',
@@ -27,7 +16,7 @@ const TodosPage = () => {
     category: '',
     due_date: ''
   });
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editingTask, setEditingTask] = useState<Todo | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
 
@@ -98,11 +87,11 @@ const TodosPage = () => {
     }
   };
 
-  const handleEdit = (task: Task) => {
+  const handleEdit = (task: Todo) => {
     setEditingTask(task);
     setNewTask({
       title: task.title,
-      description: task.description,
+      description: task.description || '',
       category: task.category || '',
       due_date: task.due_date || ''
     });
@@ -170,7 +159,7 @@ const TodosPage = () => {
               <button
                 onClick={() => {
                   setEditingTask(null);
-                  setNewTask({ title: '', description: '' });
+                  setNewTask({ title: '', description: '', category: '', due_date: '' });
                   setShowCreateForm(!showCreateForm);
                 }}
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2 shadow-sm hover:shadow-md"
@@ -336,7 +325,7 @@ const TodosPage = () => {
                 <button
                   onClick={() => {
                     setEditingTask(null);
-                    setNewTask({ title: '', description: '' });
+                    setNewTask({ title: '', description: '', category: '', due_date: '' });
                     setShowCreateForm(true);
                   }}
                   className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors duration-200"

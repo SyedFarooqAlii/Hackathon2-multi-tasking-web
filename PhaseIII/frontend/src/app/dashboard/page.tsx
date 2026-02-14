@@ -4,21 +4,12 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import ChatComponent from '../../components/ChatComponent';
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  completed: boolean;
-  created_at: string;
-  updated_at: string;
-  user_id: string;
-}
+import { Todo } from '../../lib/types';
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Todo[]>([]);
   const [loadingTasks, setLoadingTasks] = useState(true);
 
   useEffect(() => {

@@ -45,21 +45,18 @@ class Settings(BaseSettings):
 
     # CORS settings
     backend_cors_origins: List[str] = [
-        "http://localhost:3000",  # Frontend dev server
-        "http://localhost:3001",  # Frontend dev server on port 3001
-        "http://localhost:3002",  # Frontend dev server on port 3002
-        "http://localhost:3003",  # Frontend dev server on port 3003
-        "http://localhost:8000",  # Backend dev server
+        # Local development
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:8000",
         "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-        "http://127.0.0.1:3002",
-        "http://127.0.0.1:3003",
         "http://127.0.0.1:8000",
         "https://localhost:3000",
-        "https://localhost:3001",
-        "https://localhost:3002",
-        "https://localhost:3003",
-        "https://localhost:8000",
+        # Production - Vercel deployments
+        "https://multi-tasking-todo-app-hot-h-r-rose.vercel.app",
+        "https://*.vercel.app",  # Allow all Vercel preview deployments
+        # Production - Hugging Face
+        "https://syedfarooqali-todo-app.hf.space",
     ]
 
     # Logging settings

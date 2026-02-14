@@ -122,7 +122,7 @@ class ApiClient {
       const response = await apiClient.get<{ tasks: Todo[] }>('/users/me/tasks');
       console.log('GET response:', response.data);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting todos:', error);
       console.error('Error details:', {
         message: error.message,
@@ -139,7 +139,7 @@ class ApiClient {
       const response = await apiClient.post<Todo>('/users/me/tasks', todoData);
       console.log('POST response:', response.data);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating todo:', error);
       console.error('Error details:', {
         message: error.message,
@@ -160,7 +160,7 @@ class ApiClient {
     try {
       const response = await apiClient.get<Todo>(`/users/me/tasks/${todoId}`);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting todo by ID:', error);
       throw error;
     }
@@ -170,7 +170,7 @@ class ApiClient {
     try {
       const response = await apiClient.put<Todo>(`/users/me/tasks/${todoId}`, todoData);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating todo:', error);
       throw error;
     }
@@ -179,7 +179,7 @@ class ApiClient {
   async deleteTodo(todoId: string): Promise<void> {
     try {
       await apiClient.delete(`/users/me/tasks/${todoId}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting todo:', error);
       throw error;
     }
@@ -191,7 +191,7 @@ class ApiClient {
         completed,
       });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error toggling todo completion:', error);
       throw error;
     }
