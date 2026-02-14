@@ -59,17 +59,10 @@ def get_session() -> Generator[Session, None, None]:
     Get a database session for dependency injection in FastAPI endpoints.
     Creates a fresh engine and session at runtime to ensure correct database connection.
     """
-    import datetime
-    # Write to a file to make sure this is being called
-    with open('C:/Users/PMLS/Desktop/hackathon2_phase1/PhaseII/backend/debug_log.txt', 'a') as f:
-        f.write(f"{datetime.datetime.now()}: get_session() called - creating fresh engine\n")
-    print("DEBUG: get_session() called - creating fresh engine")  # Debug line
+    print("DEBUG: get_session() called - creating fresh engine")
     engine = get_engine()  # Create fresh engine at runtime
-    # Write the URL to the file as well
-    with open('C:/Users/PMLS/Desktop/hackathon2_phase1/PhaseII/backend/debug_log.txt', 'a') as f:
-        f.write(f"{datetime.datetime.now()}: Using engine with URL: {engine.url}\n")
-    print(f"DEBUG: Using engine with URL: {engine.url}")  # Debug line
+    print(f"DEBUG: Using engine with URL: {engine.url}")
     with Session(engine) as session:
-        print(f"DEBUG: Session created with dialect: {session.bind.dialect.name}")  # Debug dialect
-        print(f"DEBUG: Session bound to URL: {str(session.bind.url)}")  # Debug URL
+        print(f"DEBUG: Session created with dialect: {session.bind.dialect.name}")
+        print(f"DEBUG: Session bound to URL: {str(session.bind.url)}")
         yield session
