@@ -53,7 +53,8 @@ class Settings(BaseSettings):
         "http://127.0.0.1:8000",
         "https://localhost:3000",
         # Production - Vercel deployments
-        "https://multi-tasking-todo-app-hot-h-r-rose.vercel.app",
+        "https://multi-tasking-website-red-stal-ler.vercel.app",  # Current deployment
+        "https://multi-tasking-todo-app-hot-h-r-rose.vercel.app",  # Previous deployment
         "https://*.vercel.app",  # Allow all Vercel preview deployments
         # Production - Hugging Face
         "https://syedfarooqali-todo-app.hf.space",
