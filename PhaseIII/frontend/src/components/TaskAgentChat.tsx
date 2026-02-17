@@ -69,7 +69,8 @@ export default function TaskAgentChat({ onTaskUpdate }: TaskAgentChatProps) {
           await todoApi.createTodo({
             title: params.title,
             description: '',
-            completed: false
+            completed: false,
+            category: 'general'
           });
           if (onTaskUpdate) onTaskUpdate();
           return `✅ Task created: "${params.title}"`;
