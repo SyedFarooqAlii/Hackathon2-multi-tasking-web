@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlmodel import Session
 from typing import Dict, Any, Optional
 from pydantic import BaseModel
@@ -29,7 +29,8 @@ class ChatResponse(BaseModel):
 @router.post("/{user_id}")
 async def chat(
     user_id: str,
-    request: ChatRequest,
+    chat_request: ChatRequest,
+    request: Request,
     token: str = Depends(jwt_scheme),
     session: Session = Depends(get_session)
 ) -> ChatResponse:
@@ -40,7 +41,7 @@ async def chat(
 
     try:
         # Get the current user ID from the token
-        current_user_id = get_current_user_id(request=request)
+        current_user_id = get_current_user_id(request)
 
         # Verify that the user_id in the path matches the authenticated user
         if current_user_id != user_id:
@@ -53,12 +54,12 @@ async def chat(
         message_service = MessageService()
 
         # Get or create conversation
-        if request.conversation_id:
-            conversation = conversation_service.get_conversation_by_id(session, request.conversation_id)
+        if chat_request.conversation_id:
+            conversation = conversation_service.get_conversation_by_id(session, chat_request.conversation_id)
             if not conversation:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Conversation with id {request.conversation_id} not found"
+                    detail=f"Conversation with id {chat_request.conversation_id} not found"
                 )
         else:
             # Create a new conversation
@@ -66,7 +67,7 @@ async def chat(
 
         # Save the user's message to the database
         user_message = message_service.create_message(
-            session, conversation.id, "user", request.message
+            session, conversation.id, "user", chat_request.message
         )
 
         # Get conversation history for the agent
@@ -81,7 +82,7 @@ async def chat(
         # Process the message with the AI agent
         result = agent_service.process_conversation(
             user_id=user_id,
-            user_message=request.message,
+            user_message=chat_request.message,
             conversation_history=conversation_history[:-1]  # Exclude the current message
         )
 

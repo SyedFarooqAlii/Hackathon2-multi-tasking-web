@@ -51,15 +51,15 @@ class JWTBearer(HTTPBearer):
         """
         try:
             # Get the JWT secret from environment
-            jwt_secret = os.getenv("JWT_SECRET")
+            jwt_secret = os.getenv("SECRET_KEY")
             if not jwt_secret:
-                raise ValueError("JWT_SECRET environment variable not set")
+                raise ValueError("SECRET_KEY environment variable not set")
 
             # Decode the token
             payload = jwt.decode(token, jwt_secret, algorithms=["HS256"])
 
-            # Extract user_id from the payload
-            user_id = payload.get("user_id")
+            # Extract user_id from the payload (stored in 'sub' field)
+            user_id = payload.get("sub")
 
             if user_id:
                 return str(user_id)

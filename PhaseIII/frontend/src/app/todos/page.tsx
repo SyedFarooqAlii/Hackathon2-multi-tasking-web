@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Todo } from '../../lib/types';
+import TaskAgentChat from '../../components/TaskAgentChat';
 
 const TodosPage = () => {
   const { user, loading } = useAuth();
@@ -173,7 +174,7 @@ const TodosPage = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Create/Edit Task Form - Enhanced with Priority, Category, and Due Date */}
           {showCreateForm && (
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-8 hover:shadow-xl transition-all duration-300 group">
@@ -289,9 +290,12 @@ const TodosPage = () => {
             </div>
           )}
 
-          {/* Tasks Grid - Modern Card Layout */}
-          <div>
-            <div className="flex items-center justify-between mb-6">
+          {/* Two-column responsive layout: Task List + AI Agent */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left column - Task List (2/3 width on large screens) */}
+            <div className="lg:col-span-2">
+              {/* Tasks Grid - Modern Card Layout */}
+              <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">All Tasks</h2>
               <span className="text-sm text-gray-500 dark:text-gray-400">
                 {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
@@ -461,7 +465,15 @@ const TodosPage = () => {
             )}
           </div>
         </div>
+        {/* End of left column - Task List */}
+
+        {/* Right column - AI Task Agent (1/3 width on large screens) */}
+        <div className="lg:col-span-1">
+          <TaskAgentChat onTaskUpdate={fetchTasks} />
+        </div>
       </div>
+      {/* End of two-column grid */}
+    </div>
 
       <style jsx global>{`
         @keyframes fade-in-up {
